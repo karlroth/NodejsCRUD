@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
-var client = require('../db');
+var client = require('../db/index');
+var logger = require('../util/log');
 
 function deliver(res, message, data) {
     res.status(200).json({
@@ -14,9 +15,17 @@ function deliver(res, message, data) {
 router.get('/list', (req, res, next) => {
     client.query("SELECT * FROM EMP_DTL")
         .then((result) => {
+            logger.log({
+                level: 'info',
+                message: 'Get List'
+            })
+
             deliver(res, "recieved employees", result.rows);
         }).catch(function (error) {
-            console.log(error.message);
+            logger.log({
+                level: 'error',
+                message: error.message
+            });
         });
 });
 
@@ -29,12 +38,15 @@ router.get('/find/:email', (req, res, next) => {
                 error.status = 804;
                 next(error);
             } else {
-                deliver(res, "recieved employee",result.rows);
+                deliver(res, "recieved employee", result.rows);
             }
         }).catch(function (error) {
-            console.log(error.message);
+            logger.log({
+                level: 'error',
+                message: error.message
+            });
         });
-})
+});
 
 /* POST create a user */
 router.post('/create', (req, res, next) => {
@@ -46,12 +58,15 @@ router.post('/create', (req, res, next) => {
         .then((result, error) => {
             deliver(res, "created employee", result.rows[0]);
         }).catch(function (error) {
-            if(error.message.toString() === "duplicate key value violates unique constraint \"emp_dtl_email_key\"") {
+            if (error.message.toString() === "duplicate key value violates unique constraint \"emp_dtl_email_key\"") {
                 var error = new Error("User already exists");
                 error.status = 807;
-                next(error); 
+                next(error);
             } else {
-                console.log(error.message);
+                logger.log({
+                    level: 'error',
+                    message: error.message
+                });
             }
         });
 })
@@ -65,7 +80,10 @@ router.put('/update', (req, res, next) => {
         .then(() => {
             deliver(res, "updated employee");
         }).catch(function (error) {
-            console.log(error.message);
+            logger.log({
+                level: 'error',
+                message: error.message
+            });
         });
 })
 
@@ -76,7 +94,10 @@ router.delete('/delete', (req, res, next) => {
         .then(() => {
             deliver(res, "deleted employee");
         }).catch(function (error) {
-            console.log(error.message);
+            logger.log({
+                level: 'error',
+                message: error.message
+            });
         });
 })
 
