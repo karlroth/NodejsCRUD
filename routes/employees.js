@@ -21,8 +21,8 @@ router.get('/list', (req, res, next) => {
 });
 
 /* GET one user */
-router.get('/find/:id', (req, res, next) => {
-    client.query("SELECT * FROM EMP_DTL WHERE id=$1", [req.params.id])
+router.get('/find/:email', (req, res, next) => {
+    client.query("SELECT * FROM EMP_DTL WHERE email=$1", [req.params.email])
         .then((result) => {
             if (result.rows.length == 0) {
                 var error = new Error("User not found");
@@ -58,17 +58,12 @@ router.post('/create', (req, res, next) => {
 
 /* PUT update a user */
 router.put('/update', (req, res, next) => {
-    var id = req.body.id;
     var name = req.body.name;
     var email = req.body.email;
 
-    client.query("UPDATE EMP_DTL SET name=$2,email=$3 WHERE id=$1", [id, name, email])
+    client.query("UPDATE EMP_DTL SET name=$1 WHERE email=$2", [name, email])
         .then(() => {
             deliver(res, "updated employee");
-            // res.status(200).json({
-            //     status: "success",
-            //     message: "updated employee",
-            // })
         }).catch(function (error) {
             console.log(error.message);
         });
@@ -76,15 +71,10 @@ router.put('/update', (req, res, next) => {
 
 /* DELETE a user  */
 router.delete('/delete', (req, res, next) => {
-    var id = req.body.id;
-
-    client.query("DELETE FROM EMP_DTL WHERE id=$1", [id])
+    var email = req.body.email;
+    client.query("DELETE FROM EMP_DTL WHERE email=$1", [email])
         .then(() => {
             deliver(res, "deleted employee");
-            // res.status(200).json({
-            //     status: "success",
-            //     message: "deleted employee",
-            // })
         }).catch(function (error) {
             console.log(error.message);
         });
