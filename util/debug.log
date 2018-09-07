@@ -1,1 +1,16 @@
 {"level":"info","message":"Get List"}
+{"level":"info","message":"Get List"}
+{"level":"info","message":"Get List"}
+{"level":"info","message":"Get List"}
+{"level":"info","message":"Get List"}
+{"level":"info","message":"Get List"}
+{"level":"info","message":"register controller"}
+{"level":"info","message":"starting hash"}
+{"level":"error","message":"column \"hash_pass\" of relation \"emp_dtl\" does not exist"}
+{"level":"info","message":"Cannot read property 'salt' of undefined"}
+{"level":"info","message":"Actual: eda6911bb347e8a02153d942406a1ed6f974cc21372dba0e9b651dd15ccea5f462fb64098867636f6d45a1547c9457609e3f1a3cf92435815d4a489224bbc5fe\n Given: [object Object]"}
+{"level":"info","message":"Actual: eda6911bb347e8a02153d942406a1ed6f974cc21372dba0e9b651dd15ccea5f462fb64098867636f6d45a1547c9457609e3f1a3cf92435815d4a489224bbc5fe\n Given: eda6911bb347e8a02153d942406a1ed6f974cc21372dba0e9b651dd15ccea5f462fb64098867636f6d45a1547c9457609e3f1a3cf92435815d4a489224bbc5fe"}
+{"level":"info","message":"resutl is not defined"}
+{"level":"info","message":"Actual: eda6911bb347e8a02153d942406a1ed6f974cc21372dba0e9b651dd15ccea5f462fb64098867636f6d45a1547c9457609e3f1a3cf92435815d4a489224bbc5fe\n Given: eda6911bb347e8a02153d942406a1ed6f974cc21372dba0e9b651dd15ccea5f462fb64098867636f6d45a1547c9457609e3f1a3cf92435815d4a489224bbc5fe"}
+{"level":"info","message":"Actual: eda6911bb347e8a02153d942406a1ed6f974cc21372dba0e9b651dd15ccea5f462fb64098867636f6d45a1547c9457609e3f1a3cf92435815d4a489224bbc5fe\n Given: eda6911bb347e8a02153d942406a1ed6f974cc21372dba0e9b651dd15ccea5f462fb64098867636f6d45a1547c9457609e3f1a3cf92435815d4a489224bbc5fe"}
+{"level":"info","message":"Get List"}

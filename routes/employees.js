@@ -1,7 +1,10 @@
+"use strict";
 var express = require('express');
 var router = express.Router();
 var client = require('../db/index');
 var logger = require('../util/log');
+var crypto = require('crypto');
+
 
 function deliver(res, message, data) {
     res.status(200).json({
@@ -10,6 +13,79 @@ function deliver(res, message, data) {
         "data": data
     })
 }
+
+// taken from https://ciphertrick.com/ 
+var genRandomString = function (length) {
+    return crypto.randomBytes(Math.ceil(length / 2))
+        .toString('hex')
+        .slice(0, length);
+};
+
+var genHash = function (password, salt) {
+   
+    var hash = crypto.createHmac('sha512', salt);
+
+    hash.update(password);
+    var value = hash.digest('hex');
+    return {
+        password: value,
+        salt: salt
+    };
+}
+
+/* POST Register user */
+router.post('/register', (req, res, next) => {
+
+    var email = req.body.email;
+    var password = req.body.password;
+    
+    var hashed = genHash(password, genRandomString(10));
+
+    client.query("INSERT INTO EMP_DTL (email, password, salt) values ($1,$2,$3)", [email, hashed.password, hashed.salt])
+        .then((result, error) => {
+            deliver(res, "created employee", result.rows[0]);
+        }).catch(function (error) {
+            if (error.message.toString() === "duplicate key value violates unique constraint \"emp_dtl_email_key\"") {
+                var error = new Error("User already exists");
+                error.status = 807;
+                next(error);
+            } else {
+                logger.log({
+                    level: 'info',
+                    message: error.message
+                });
+            }
+        });
+
+});
+
+/* GET login user */
+router.post('/login', (req,res,next) =>{
+    var email = req.body.email;
+    var password = req.body.password;
+
+    client.query("SELECT * FROM EMP_DTL WHERE email=$1",[email])
+        .then((result) => {
+            var givenHash = genHash(password, result.rows[0].salt);
+            logger.log({
+                level:'info',
+                message:"Actual: "+result.rows[0].password+"\n Given: "+givenHash.password 
+            })
+            if(givenHash.password === result.rows[0].password) {
+                deliver(res,"Logged in user");
+            } else {
+                var error = new Error("Email and password do not match");
+                error.status = 809;
+                next(error);
+            }
+        })
+        .catch(function(error) {
+            logger.log({
+                level:'info',
+                message: error.message
+            })
+        })
+})
 
 /* GET all users */
 router.get('/list', (req, res, next) => {
@@ -23,7 +99,7 @@ router.get('/list', (req, res, next) => {
             deliver(res, "recieved employees", result.rows);
         }).catch(function (error) {
             logger.log({
-                level: 'error',
+                level: 'info',
                 message: error.message
             });
         });
@@ -42,7 +118,7 @@ router.get('/find/:email', (req, res, next) => {
             }
         }).catch(function (error) {
             logger.log({
-                level: 'error',
+                level: 'info',
                 message: error.message
             });
         });
@@ -64,7 +140,7 @@ router.post('/create', (req, res, next) => {
                 next(error);
             } else {
                 logger.log({
-                    level: 'error',
+                    level: 'info',
                     message: error.message
                 });
             }
@@ -81,7 +157,7 @@ router.put('/update', (req, res, next) => {
             deliver(res, "updated employee");
         }).catch(function (error) {
             logger.log({
-                level: 'error',
+                level: 'info',
                 message: error.message
             });
         });
@@ -95,7 +171,7 @@ router.delete('/delete', (req, res, next) => {
             deliver(res, "deleted employee");
         }).catch(function (error) {
             logger.log({
-                level: 'error',
+                level: 'info',
                 message: error.message
             });
         });
